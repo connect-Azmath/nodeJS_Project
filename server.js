@@ -1,44 +1,79 @@
-const http = require("http");   // package import
+const express = require("express");
 
-const port = 8081; 
+// Only Get, Post & Delete  --- other API methods needs to be implemented
+// initilisation
+const app = express();
+
+// App use data in json format 
+app.use(express.json());
+
+const port = 8081;
 
 const toDoList = ["java", "javascript", "python"];
 
-http.createServer((req, res) => {
-    const{method, url} = req;
-    console.log(method , url);
 
-    if(url === '/todos'){
-        if(method === 'GET'){
-            res.writeHead(200);
-            res.write(toDoList.toString());
-        }
-    } else if (url === '/azmath'){
-        res.writeHead(200, {"Content-Type": "text/html"});
-        res.write("<h2> Default page </h2>");
+// Get method
+app.get("/todos", (req, res) => {
+    res.status(200).send(toDoList);
+});
 
-    } else if (url === '/any'){
-        res.writeHead(200, {"Content-Type": "text/html"});
-        res.write("<h2> Default page </h2>");
+// multi-level query params
+app.get("/todos/user", (req, res) => {
+    res.status(200).send(toDoList);
+});
 
-    }else if (url === '/'){
-        res.writeHead(200, {"Content-Type": "text/html"});
-        res.write("<h2> Default page </h2>");
 
-    }  else {
-        res.writeHead(501); // error code
-    }
-    res.end();
+// Post method
+app.post('/todos', (req, res) => {
+    let newToDOList = req.body.items;
+    toDoList.push(newToDOList);
+    res.status(201).send({
+        message : "Added task Successfully"
+        //  newToDOList
+    });
+    console.log("Added Item", newToDOList);
 })
 
-// http.createServer((require, response) => {
-//    // callback function
-//     response.writeHead(200, {"Content-Type": "text/html"});
-//     response.write("<h2>Hi World, Server Started </h2>");
-//     response.end();
-// })
-.listen(port, () => {
-     // callback function
-    console.log('NodeJS server running on port number ${port}', port);
-} );
- 
+// multi-level query params
+app.post('/todos/user', (req, res) => {
+    let newToDOList = req.body.items;
+    toDoList.push(newToDOList);
+    res.status(201).send({
+        message : "Added task Successfully"
+        //  newToDOList
+    });
+    console.log("Added Item", newToDOList);
+})
+
+//Delete method
+app.delete('/todos', (req, res) => {
+    const itemToBeDeleted = req.body.item;
+    toDoList.find((ele, index) => {
+        if(ele === itemToBeDeleted){
+            toDoList.splice(index, 1);
+        }
+    })
+    res.status(204).send({
+        message: `Item deleted "${itemToBeDeleted}" `
+    })
+    console.log("Deleted Item", itemToBeDeleted);
+})
+
+app.all("/todos", (req, res) => {
+    res.status(501).send({
+        message: "Feature not Implemented"
+    })
+})
+
+// for all the requests which are not implemented / its incorrct
+app.all("*", (req, res) => {
+    res.status(501).send({
+        message: "Feature not Implemented"
+    })
+})
+
+// listning the port
+app.listen(port, ()=> {
+    console.log(`NodeJS server running on port number ${port}`);
+})
+

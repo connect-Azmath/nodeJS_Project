@@ -8,11 +8,11 @@
     "start": "node server.js",
     "azmath": "node server.js",
     "dev": "nodemon server.js"
-
   },
   "author": "Azmath",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.18.2",
     "nodemon": "^3.0.1"
   }
 }
